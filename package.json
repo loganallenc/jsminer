@@ -14,7 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "binascii": "0.0.1",
-    "express": "^4.12.3",
-    "sha.js": "^2.4.0"
+    "express": "^4.16.2",
+    "sha.js": "^2.4.9",
+    "stratum": "^0.2.4"
   }
 }

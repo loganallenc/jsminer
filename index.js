@@ -2,6 +2,9 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 5000;
 var worker_name = '13XHeLLVeFtqef7WD4BDL3fQRqpVTUdG3i';
+var worker_password = 'x';
+var pool_url = "stratum.bitcoin.cz";
+var pool_port = 3333;
 var curr_block = {};
 var createHash = require('sha.js');
 var sha256 = createHash('sha256');
@@ -67,7 +70,7 @@ params[4][] = List of merkle branches. The coinbase transaction is hashed agains
 params[5] = Bitcoin block version, used in the block header.
 params[6] = nBit, the encoded network difficulty. Used in the block header.
 params[7] = nTime, the current time. nTime rolling should be supported, but should not increase faster than actual time.
-params[8] = Clean Jobs. If true, miners should abort their current work and immediately use the new job. If false, they can still use the current job, but should move to the new one after exhausting the current nonce 
+params[8] = Clean Jobs. If true, miners should abort their current work and immediately use the new job. If false, they can still use the current job, but should move to the new one after exhausting the current nonce
 */
         //build curr_block
         curr_block.job_id = data.params[0];
@@ -75,7 +78,7 @@ params[8] = Clean Jobs. If true, miners should abort their current work and imme
         //generate an extranonce2 of the correct size.  typically the client would increment this but we already have 2^32 possible nonces per worker
         //therefore each client has 4 billion hashes to try before needing new work
         //ExtraNonce2_size: This is how many bytes should be used for the ExtraNonce2 counter.
-        //ExtraNonce2 is a hexadecimal counter, and should be padded to fill up the number of bytes identified as the ExtraNonce2_size.  
+        //ExtraNonce2 is a hexadecimal counter, and should be padded to fill up the number of bytes identified as the ExtraNonce2_size.
         //static extranonce of 4 bytes in hex, could be incremented by the client miners if desired
         curr_block.extranonce2 = "00000000";
         curr_block.ntime = data.params[7];
@@ -110,7 +113,7 @@ params[8] = Clean Jobs. If true, miners should abort their current work and imme
         /*
         result[0] = "mining.notify", "ae6812eb4cd7735a302a8a9dd95cf71f" - Unique string used for the subscription
         result[1] = ExtraNonce1, used for building the coinbase.
-        result[2] = Extranonce2_size, the number of bytes that the miner users for its ExtraNonce2 counter 
+        result[2] = Extranonce2_size, the number of bytes that the miner users for its ExtraNonce2 counter
         */
         //place subscription data in the current block
         curr_block.extranonce1 = data.result[1];
@@ -121,7 +124,7 @@ params[8] = Clean Jobs. If true, miners should abort their current work and imme
     if (!socket.authorized) {
         console.log('Asking for authorization');
         //any password can be used
-        socket.stratumAuthorize(worker_name, 'x');
+        socket.stratumAuthorize(worker_name, worker_password);
     }
     else {
         console.log("authorized");
@@ -130,8 +133,8 @@ params[8] = Clean Jobs. If true, miners should abort their current work and imme
 client.connect({
     //host: 'stratum.mining.eligius.st',
     //port: 3334
-    host: 'stratum.bitcoin.cz',
-    port: 3333
+    host: pool_url,
+    port: pool_port
 }).then(function(socket) {
     // deferred, this can be chained if needed, no callback hell
     // "socket" refers to the current client, in this case, the 'client'
